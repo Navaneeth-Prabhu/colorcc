@@ -1,241 +1,193 @@
 'use client'
-import React, { useState, useEffect } from 'react';
-import colorNameList from 'color-name-list';
+import React, { useEffect, useState } from 'react';
 
 const ColorContrast = () => {
-  const [backgroundHSL, setBackgroundHSL] = useState({ h: 0, s: 0, l: 100 });
-  const [foregroundHSL, setForegroundHSL] = useState({ h: 0, s: 0, l: 0 });
-  const [backgroundInput, setBackgroundInput] = useState('#fefefe');
-  const [foregroundInput, setForegroundInput] = useState('#010101');
-  const [contrastRatio, setContrastRatio] = useState(0);
-  const [accessibilityRatingLarge, setAccessibilityRatingLarge] = useState('');
-  const [accessibilityRatingNormal, setAccessibilityRatingNormal] = useState('');
-
-  const handleBackgroundChange = (e) => {
-    const color = e.target.value;
-    setBackgroundInput(color);
-    updateHSLColor(color, setBackgroundHSL);
-  };
-
-  const handleForegroundChange = (e) => {
-    const color = e.target.value;
-    setForegroundInput(color);
-    updateHSLColor(color, setForegroundHSL);
-  };
-
-  const handleBackgroundPropertiesChange = (property, value) => {
-    const updatedHSL = { ...backgroundHSL, [property.toLowerCase()]: value };
-    setBackgroundHSL(updatedHSL);
-    setBackgroundInput(`#${((1 << 24) + (Math.round(updatedHSL.l * 255 / 100) << 16) + (Math.round(updatedHSL.s * 255 / 100) << 8) + Math.round(updatedHSL.h * 255 / 360)).toString(16).slice(1)}`);
-  };
-
-  const handleForegroundPropertiesChange = (property, value) => {
-    const updatedHSL = { ...foregroundHSL, [property.toLowerCase()]: value };
-    setForegroundHSL(updatedHSL);
-    setForegroundInput(`#${((1 << 24) + (Math.round(updatedHSL.l * 255 / 100) << 16) + (Math.round(updatedHSL.s * 255 / 100) << 8) + Math.round(updatedHSL.h * 255 / 360)).toString(16).slice(1)}`);
-  };
-
-  const updateHSLColor = (color, setHSL) => {
-    const hexRegex = /^#(?:[0-9a-fA-F]{3}){1,2}$/;
-    if (hexRegex.test(color)) {
-      const hsl = rgbToHsl(hexToRgb(color));
-      setHSL(hsl);
-    } else {
-      const namedColor = color.toLowerCase();
-      const namedColorHex = colorNameToHex(namedColor);
-      if (namedColorHex) {
-        const hsl = rgbToHsl(hexToRgb(namedColorHex));
-        setHSL(hsl);
-      }
-    }
-  };
-
-  const rgbToHsl = (color) => {
-    const { r, g, b } = color;
-
-    const normalizedR = r / 255;
-    const normalizedG = g / 255;
-    const normalizedB = b / 255;
-
-    const max = Math.max(normalizedR, normalizedG, normalizedB);
-    const min = Math.min(normalizedR, normalizedG, normalizedB);
-
-    let h = 0;
-    let s = 0;
-    let l = (max + min) / 2;
-
-    if (max !== min) {
-      s = l > 0.5 ? (max - min) / (2 - max - min) : (max - min) / (max + min);
-
-      switch (max) {
-        case normalizedR:
-          h = (normalizedG - normalizedB) / (max - min) + (normalizedG < normalizedB ? 6 : 0);
-          break;
-        case normalizedG:
-          h = (normalizedB - normalizedR) / (max - min) + 2;
-          break;
-        case normalizedB:
-          h = (normalizedR - normalizedG) / (max - min) + 4;
-          break;
-        default:
-          break;
-      }
-
-      h /= 6;
-    }
-
-    return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
-  };
-
-  const hexToRgb = (hex) => {
-    hex = hex.replace(/^#/, '');
-
-    const bigint = parseInt(hex, 16);
-    const r = (bigint >> 16) & 255;
-    const g = (bigint >> 8) & 255;
-    const b = bigint & 255;
-
-    return { r, g, b };
-  };
-
-  const colorNameToHex = (colorName) => {
-    const colorEntry = colorNameList.find(entry => entry.name.toLowerCase() === colorName);
-    return colorEntry ? colorEntry.hex : undefined;
-  };
+  const [backgroundColor, setBackgroundColor] = useState('#ffffff');
+  const [foregroundColor, setForegroundColor] = useState('#000000');
+  const [contrastRatio, setContrastRatio] = useState(null);
+  const [contrastPass, setContrastPass] = useState(null);
 
   useEffect(() => {
-    updateHSLColor('#ffffff', setBackgroundHSL);
-    updateHSLColor('#000000', setForegroundHSL);
-  }, []);
+    calculateContrastRatio();
+  }, [backgroundColor, foregroundColor]);
 
-
-  const calculateLuminance = (color) => {
-    const { r, g, b } = color;
-    const sRGB = [r, g, b].map(value => {
-      value /= 255;
-      return value <= 0.04045 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4);
-    });
-    const luminance = 0.2126 * sRGB[0] + 0.7152 * sRGB[1] + 0.0722 * sRGB[2];
-    return luminance * 100;
-  };
-
-  const calculateContrastRatio = (color1, color2) => {
-    const lum1 = calculateLuminance(color1);
-    const lum2 = calculateLuminance(color2);
-
-    if (!isNaN(lum1) && !isNaN(lum2) && lum1 >= 0 && lum1 <= 100 && lum2 >= 0 && lum2 <= 100) {
-      const contrastRatio = (Math.max(lum1, lum2) + 0.05) / (Math.min(lum1, lum2) + 0.05);
-      return parseFloat(contrastRatio.toFixed(2));
-    }
-
-    return 'Invalid contrast ratio';
-  };
-
-  useEffect(() => {
-    const contrastRatioValue = calculateContrastRatio(hslToRgb(backgroundHSL), hslToRgb(foregroundHSL));
-    setContrastRatio(contrastRatioValue);
-    setAccessibilityRatings(contrastRatioValue);
-  }, [backgroundHSL, foregroundHSL]);
-
-  const hslToRgb = (hsl) => {
-    const { h, s, l } = hsl;
-    const c = (1 - Math.abs(2 * l - 1)) * s;
-    const x = c * (1 - Math.abs((h / 60) % 2 - 1));
-    const m = l - c / 2;
-
-    let r, g, b;
-
-    if (h < 60) {
-      r = c;
-      g = x;
-      b = 0;
-    } else if (h < 120) {
-      r = x;
-      g = c;
-      b = 0;
-    } else if (h < 180) {
-      r = 0;
-      g = c;
-      b = x;
-    } else if (h < 240) {
-      r = 0;
-      g = x;
-      b = c;
-    } else if (h < 300) {
-      r = x;
-      g = 0;
-      b = c;
-    } else {
-      r = c;
-      g = 0;
-      b = x;
-    }
-
-    return {
-      r: Math.round((r + m) * 255),
-      g: Math.round((g + m) * 255),
-      b: Math.round((b + m) * 255),
+  const calculateContrastRatio = () => {
+    const hexToRgb = (hex) => {
+      const bigint = parseInt(hex.slice(1), 16);
+      const r = (bigint >> 16) & 255;
+      const g = (bigint >> 8) & 255;
+      const b = bigint & 255;
+      return [r, g, b];
     };
+
+    const rgbToLuminance = (rgb) => {
+      const srgb = (c) => {
+        c /= 255;
+        return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+      };
+      const gamma = (c) => srgb(c) * 255;
+      return 0.2126 * gamma(rgb[0]) + 0.7152 * gamma(rgb[1]) + 0.0722 * gamma(rgb[2]);
+    };
+
+    const bgRgb = hexToRgb(backgroundColor);
+    const fgRgb = hexToRgb(foregroundColor);
+
+    const bgLuminance = rgbToLuminance(bgRgb) / 255;
+    const fgLuminance = rgbToLuminance(fgRgb) / 255;
+
+    const contrast = (l1, l2) => {
+      const lighter = Math.max(l1, l2);
+      const darker = Math.min(l1, l2);
+      return (lighter + 0.05) / (darker + 0.05);
+    };
+
+    const ratio = contrast(bgLuminance, fgLuminance);
+    setContrastRatio(ratio.toFixed(2));
+
+    const contrastPassSmallText = ratio >= 4.5;
+    const contrastPassLargeText = ratio >= 3;
+
+    setContrastPass({
+      smallText: contrastPassSmallText,
+      largeText: contrastPassLargeText,
+    });
   };
 
-  const setAccessibilityRatings = (contrastRatioValue) => {
-    const isLargeText = contrastRatioValue >= 3.0;
+  const enhanceContrast = (type) => {
+    const hexToRgb = (hex) => {
+      const bigint = parseInt(hex.slice(1), 16);
+      const r = (bigint >> 16) & 255;
+      const g = (bigint >> 8) & 255;
+      const b = bigint & 255;
+      return [r, g, b];
+    };
 
-    const aaLarge = contrastRatioValue >= 3.0 ? 'Pass' : 'Fail';
-    const aaaLarge = contrastRatioValue >= 4.5 ? 'Pass' : 'Fail';
-    const aaNormal = isLargeText || contrastRatioValue >= 4.5 ? 'Pass' : 'Fail';
-    const aaaNormal = contrastRatioValue >= 7.0 ? 'Pass' : 'Fail';
+    const rgbToHex = (rgb) => {
+      const [r, g, b] = rgb;
+      const toHex = (c) => {
+        const hex = c.toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+      };
+      return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+    };
 
-    setAccessibilityRatingLarge(`AA Large: ${aaLarge}`);
-    setAccessibilityRatingNormal(`AAA Large: ${aaaLarge}`);
-    setAccessibilityRatingLarge(`AA Normal: ${aaNormal}`);
-    setAccessibilityRatingNormal(`AAA Normal: ${aaaNormal}`);
+    const enhanceColor = (color) => {
+      const colorRgb = hexToRgb(color);
+
+      // Enhance the color by inverting it
+      const enhancedRgb = colorRgb.map((c) => 255 - c);
+
+      return rgbToHex(enhancedRgb);
+    };
+
+    let newBackgroundColor = backgroundColor;
+    let newForegroundColor = foregroundColor;
+
+    switch (type) {
+      case 'background':
+        newBackgroundColor = enhanceColor(backgroundColor);
+        break;
+      case 'foreground':
+        newForegroundColor = enhanceColor(foregroundColor);
+        break;
+      case 'both':
+        newBackgroundColor = enhanceColor(backgroundColor);
+        newForegroundColor = enhanceColor(foregroundColor);
+        break;
+      default:
+        break;
+    }
+
+    setBackgroundColor(newBackgroundColor);
+    setForegroundColor(newForegroundColor);
+  };
+
+  const switchColors = () => {
+    const temp = backgroundColor;
+    setBackgroundColor(foregroundColor);
+    setForegroundColor(temp);
   };
 
   return (
-    <div className='bg-slate-400 w-screen h-screen p-10 flex flex-row'>
-      <div className='w-1/2 h-full flex-1 border-2 text-2xl rounded p-10' style={{ backgroundColor: `hsl(${backgroundHSL.h}, ${backgroundHSL.s}%, ${backgroundHSL.l}%)`, color: `hsl(${foregroundHSL.h}, ${foregroundHSL.s}%, ${foregroundHSL.l}%)` }}>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reprehenderit iure facere et, optio ad nemo voluptatum cupiditate quod consectetur quidem numquam a fuga, dolorum veniam modi totam veritatis dolores asperiores?
-        </p>
+    <div className='bg-slate-500 w-full flex gap-10 p-10' style={{ background: backgroundColor }}>
+      <div className='flex-1'>
+        <label>
+          Background Color:
+          <div  className='bg-white border rounded-lg items-center flex h-12 w-fit overflow-hidden px-1'>
+          <input
+            type="text"
+            value={backgroundColor}
+            onChange={(e) => setBackgroundColor(e.target.value)}
+            className='p-2'
+          />
+            <input
+            type="color"
+            value={backgroundColor}
+            onChange={(e) => setBackgroundColor(e.target.value)}
+            id='style1'
+          // className='h-8 w-8 rounded-md p-0 m-0'
+          />
+          </div>
+        </label>
+        <br />
+        <label className=''>
+          Foreground Color:
+         <div className='bg-white border rounded-lg items-center flex h-12 w-fit overflow-hidden px-1'>
+          <input
+            type="text"
+            value={foregroundColor}
+            onChange={(e) => setForegroundColor(e.target.value)}
+            className='p-2'
+          />
+           <input
+            type="color"
+            value={foregroundColor}
+            onChange={(e) => setForegroundColor(e.target.value)}
+            id='style2'
+          />
+         </div>
+        </label>
+        {contrastRatio !== null && (
+          <div className='flex-row'>
+            <p>Contrast Ratio: {contrastRatio}</p>
+            {!contrastPass.smallText && !contrastPass.largeText && (
+              <div className='flex-col gap-2'>
+                <div>
+                  <button onClick={() => enhanceContrast('background')}>Enhance Background Contrast</button>
+                </div>
+                <div>
+                  <button onClick={() => enhanceContrast('foreground')}>Enhance Foreground Contrast</button>
+                </div>
+                <div>
+                  <button onClick={() => enhanceContrast('both')}>Enhance Both Contrasts</button>
+                </div>
+              </div>
+            )}
+            <button onClick={switchColors}>Switch Colors</button>
+            <p>
+              {contrastPass.smallText
+                ? 'Passes small text contrast requirements.'
+                : 'Fails small text contrast requirements.'}
+            </p>
+            <p>
+              {contrastPass.largeText
+                ? 'Passes large text contrast requirements.'
+                : 'Fails large text contrast requirements.'}
+            </p>
+            {/* {contrastPass.smallText && contrastPass.largeText && <p>Contrast ratio passes both small and large text requirements.</p>}
+          {contrastPass.smallText && !contrastPass.largeText && <p>Contrast ratio passes small text requirements.</p>}
+          {!contrastPass.smallText && contrastPass.largeText && <p>Contrast ratio passes large text requirements.</p>} */}
+          </div>
+        )}
       </div>
-      <div className='w-1/2 flex-1 p-10 flex flex-col gap-1'>
-        <p>Background Color</p>
-        <input type="text" className='h-10 p-5 border rounded-lg text-md' value={backgroundInput} onChange={handleBackgroundChange} />
-
-        <p>Hue</p>
-        <input type="range" value={backgroundHSL.h} onChange={(e) => handleBackgroundPropertiesChange('h', e.target.value)} />
-
-        <p>Saturation</p>
-        <input type="range" value={backgroundHSL.s} onChange={(e) => handleBackgroundPropertiesChange('s', e.target.value)} />
-
-        <p>Lightness</p>
-        <input type="range" value={backgroundHSL.l} onChange={(e) => handleBackgroundPropertiesChange('l', e.target.value)} />
-
-        <p>Foreground Color</p>
-        <input type="text" value={foregroundInput} onChange={handleForegroundChange} />
-
-        <p>Hue</p>
-        <input type="range" value={foregroundHSL.h} onChange={(e) => handleForegroundPropertiesChange('h', e.target.value)} />
-
-        <p>Saturation</p>
-        <input type="range" value={foregroundHSL.s} onChange={(e) => handleForegroundPropertiesChange('s', e.target.value)} />
-
-        <p>Lightness</p>
-        <input type="range" value={foregroundHSL.l} onChange={(e) => handleForegroundPropertiesChange('l', e.target.value)} />
-
-        <div>
-          <p>Contrast Ratio: {contrastRatio}</p>
-          <p>Accessibility Ratings:</p>
-
-          <p>{accessibilityRatingLarge}</p>
-          <p>{accessibilityRatingLarge}</p>
-          <p>{accessibilityRatingNormal}</p>
-          <p>{accessibilityRatingNormal}</p>
-        </div>
+      <div className='flex-1'>
+        <p className='text-5xl font-bold' style={{color:foregroundColor}}>hello</p>
+        <p className='text-5xl font-bold' style={{color:foregroundColor}}>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iusto quibusdam et velit. Nobis, nulla qui itaque corrupti tempore assumenda iste. Commodi eos cumque assumenda, autem unde illum eius deserunt quod.</p>
       </div>
     </div>
   );
 };
 
 export default ColorContrast;
+
+
