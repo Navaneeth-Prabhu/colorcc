@@ -1,188 +1,151 @@
 'use client'
+import { useMyContext } from '@/context/store';
 import React, { useEffect, useState } from 'react';
 
 const ColorContrast = () => {
-  const [backgroundColor, setBackgroundColor] = useState('#ffffff');
-  const [foregroundColor, setForegroundColor] = useState('#000000');
-  const [contrastRatio, setContrastRatio] = useState(null);
-  const [contrastPass, setContrastPass] = useState(null);
+  const { backgroundColor, foregroundColor, contrastPass, textColor, switchColors, setContrastPass, contrastRatio, enhanceContrast, handleColorSelection, saveColors, savedColors, setBackgroundColor, setForegroundColor } = useMyContext();
 
-  useEffect(() => {
-    calculateContrastRatio();
-  }, [backgroundColor, foregroundColor]);
-
-  const calculateContrastRatio = () => {
-    const hexToRgb = (hex) => {
-      const bigint = parseInt(hex.slice(1), 16);
-      const r = (bigint >> 16) & 255;
-      const g = (bigint >> 8) & 255;
-      const b = bigint & 255;
-      return [r, g, b];
-    };
-
-    const rgbToLuminance = (rgb) => {
-      const srgb = (c) => {
-        c /= 255;
-        return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
-      };
-      const gamma = (c) => srgb(c) * 255;
-      return 0.2126 * gamma(rgb[0]) + 0.7152 * gamma(rgb[1]) + 0.0722 * gamma(rgb[2]);
-    };
-
-    const bgRgb = hexToRgb(backgroundColor);
-    const fgRgb = hexToRgb(foregroundColor);
-
-    const bgLuminance = rgbToLuminance(bgRgb) / 255;
-    const fgLuminance = rgbToLuminance(fgRgb) / 255;
-
-    const contrast = (l1, l2) => {
-      const lighter = Math.max(l1, l2);
-      const darker = Math.min(l1, l2);
-      return (lighter + 0.05) / (darker + 0.05);
-    };
-
-    const ratio = contrast(bgLuminance, fgLuminance);
-    setContrastRatio(ratio.toFixed(2));
-
-    const contrastPassSmallText = ratio >= 4.5;
-    const contrastPassLargeText = ratio >= 3;
-
-    setContrastPass({
-      smallText: contrastPassSmallText,
-      largeText: contrastPassLargeText,
-    });
+  const handleSaveColors = () => {
+    saveColors(backgroundColor, foregroundColor);
   };
 
-  const enhanceContrast = (type) => {
-    const hexToRgb = (hex) => {
-      const bigint = parseInt(hex.slice(1), 16);
-      const r = (bigint >> 16) & 255;
-      const g = (bigint >> 8) & 255;
-      const b = bigint & 255;
-      return [r, g, b];
-    };
-
-    const rgbToHex = (rgb) => {
-      const [r, g, b] = rgb;
-      const toHex = (c) => {
-        const hex = c.toString(16);
-        return hex.length === 1 ? '0' + hex : hex;
-      };
-      return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-    };
-
-    const enhanceColor = (color) => {
-      const colorRgb = hexToRgb(color);
-
-      // Enhance the color by inverting it
-      const enhancedRgb = colorRgb.map((c) => 255 - c);
-
-      return rgbToHex(enhancedRgb);
-    };
-
-    let newBackgroundColor = backgroundColor;
-    let newForegroundColor = foregroundColor;
-
-    switch (type) {
-      case 'background':
-        newBackgroundColor = enhanceColor(backgroundColor);
-        break;
-      case 'foreground':
-        newForegroundColor = enhanceColor(foregroundColor);
-        break;
-      case 'both':
-        newBackgroundColor = enhanceColor(backgroundColor);
-        newForegroundColor = enhanceColor(foregroundColor);
-        break;
-      default:
-        break;
-    }
-
-    setBackgroundColor(newBackgroundColor);
-    setForegroundColor(newForegroundColor);
-  };
-
-  const switchColors = () => {
-    const temp = backgroundColor;
-    setBackgroundColor(foregroundColor);
-    setForegroundColor(temp);
-  };
 
   return (
-    <div className='bg-slate-500 w-full flex gap-10 p-10' style={{ background: backgroundColor }}>
-      <div className='flex-1'>
-        <label>
-          Background Color:
-          <div  className='bg-white border rounded-lg items-center flex h-12 w-fit overflow-hidden px-1'>
-          <input
-            type="text"
-            value={backgroundColor}
-            onChange={(e) => setBackgroundColor(e.target.value)}
-            className='p-2'
-          />
-            <input
-            type="color"
-            value={backgroundColor}
-            onChange={(e) => setBackgroundColor(e.target.value)}
-            id='style1'
-          // className='h-8 w-8 rounded-md p-0 m-0'
-          />
-          </div>
-        </label>
-        <br />
-        <label className=''>
-          Foreground Color:
-         <div className='bg-white border rounded-lg items-center flex h-12 w-fit overflow-hidden px-1'>
-          <input
-            type="text"
-            value={foregroundColor}
-            onChange={(e) => setForegroundColor(e.target.value)}
-            className='p-2'
-          />
-           <input
-            type="color"
-            value={foregroundColor}
-            onChange={(e) => setForegroundColor(e.target.value)}
-            id='style2'
-          />
-         </div>
-        </label>
-        {contrastRatio !== null && (
-          <div className='flex-row'>
-            <p>Contrast Ratio: {contrastRatio}</p>
-            {!contrastPass.smallText && !contrastPass.largeText && (
-              <div className='flex-col gap-2'>
-                <div>
-                  <button onClick={() => enhanceContrast('background')}>Enhance Background Contrast</button>
-                </div>
-                <div>
-                  <button onClick={() => enhanceContrast('foreground')}>Enhance Foreground Contrast</button>
-                </div>
-                <div>
-                  <button onClick={() => enhanceContrast('both')}>Enhance Both Contrasts</button>
-                </div>
-              </div>
-            )}
-            <button onClick={switchColors}>Switch Colors</button>
-            <p>
-              {contrastPass.smallText
-                ? 'Passes small text contrast requirements.'
-                : 'Fails small text contrast requirements.'}
-            </p>
-            <p>
-              {contrastPass.largeText
-                ? 'Passes large text contrast requirements.'
-                : 'Fails large text contrast requirements.'}
-            </p>
-            {/* {contrastPass.smallText && contrastPass.largeText && <p>Contrast ratio passes both small and large text requirements.</p>}
-          {contrastPass.smallText && !contrastPass.largeText && <p>Contrast ratio passes small text requirements.</p>}
-          {!contrastPass.smallText && contrastPass.largeText && <p>Contrast ratio passes large text requirements.</p>} */}
-          </div>
-        )}
+    <div className=' w-full flex-col gap-10 p-10' style={{ background: backgroundColor }}>
+      <div className='py-5 px-10'>
+        <h2 className='text-4xl font-semibold' style={{ color: contrastRatio < 3 ? textColor : foregroundColor }}>Color Contrast Checker</h2>
       </div>
-      <div className='flex-1'>
-        <p className='text-5xl font-bold' style={{color:foregroundColor}}>hello</p>
-        <p className='text-5xl font-bold' style={{color:foregroundColor}}>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iusto quibusdam et velit. Nobis, nulla qui itaque corrupti tempore assumenda iste. Commodi eos cumque assumenda, autem unde illum eius deserunt quod.</p>
+      <div className=' w-full flex gap-10 p-10 flex-row'>
+        <div className='flex flex-1 flex-col gap-6 '>
+          <p className='text-5xl font-bold' style={{ color: foregroundColor }}>hello</p>
+          <p className='text-2xl font-bold' style={{ color: foregroundColor }}>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iusto quibusdam et velit. Nobis, nulla qui itaque corrupti tempore assumenda iste. Commodi eos cumque assumenda, autem unde illum eius deserunt quod.</p>
+          <p className='text-base ' style={{ color: foregroundColor }}>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iusto quibusdam et velit. Nobis, nulla qui itaque corrupti tempore assumenda iste. Commodi eos cumque assumenda, autem unde illum eius deserunt quod.</p>
+        </div>
+
+        <div className=' flex-1 flex flex-col justify-start items-start px-10 border-l-2 gap-2'>
+          <p className='text-md font-bold' style={{ color: contrastRatio < 3 ? textColor : foregroundColor }}>Contrast Ratio: <span className='text-4xl'>{contrastRatio}</span></p>
+          <div className='flex gap-4'>
+
+            {contrastPass?.smallTextAA
+              ? <p style={{ color: textColor }}>smallTextAA: <span className='text-lg font-semibold'>Pass</span></p>
+              : <p style={{ color: textColor }}>smallTextAA: <span className='text-lg font-semibold'>Fail</span></p>}
+
+            {contrastPass?.smallTextAAA
+              ? <p style={{ color: textColor }}>smallTextAAA: <span className='text-lg font-semibold'>Pass</span></p>
+              : <p style={{ color: textColor }}>smallTextAAA: <span className='text-lg font-semibold'>Fail</span></p>}
+          </div>
+          <div className='flex gap-4'>
+
+            {contrastPass?.largeTextAA
+              ? <p style={{ color: textColor }}>largeTextAA: <span className='text-lg font-semibold'>Pass</span></p>
+              : <p style={{ color: textColor }}>largeTextAA: <span className='text-lg font-semibold'>Fail</span></p>}
+            {contrastPass?.largeTextAAA
+              ? <p style={{ color: textColor }}>largeTextAAA: <span className='text-lg font-semibold'>Pass</span></p>
+              : <p style={{ color: textColor }}>largeTextAAA: <span className='text-lg font-semibold'>Fail</span></p>}
+          </div>
+          <div className='flex flex-row gap-4 mt-4 w-full'>
+
+            <label>
+              <p style={{ color: contrastRatio < 3 ? textColor : foregroundColor }}>Background Color:</p>
+              <div className='bg-white border rounded-lg items-center flex h-12 w-[250px] overflow-hidden px-1 border-gray-400'>
+                <input
+                  type="text"
+                  value={backgroundColor}
+                  onChange={(e) => setBackgroundColor(e.target.value)}
+                  className='p-2 w-[200px]'
+                />
+                <input
+                  type="color"
+                  value={backgroundColor}
+                  onChange={(e) => setBackgroundColor(e.target.value)}
+                  id='style1'
+                // className='h-8 w-8 rounded-md p-0 m-0'
+                />
+              </div>
+            </label>
+
+            <label className=''>
+              <p style={{ color: contrastRatio < 3 ? textColor : foregroundColor }}>Foreground Color:</p>
+
+              <div className='bg-white border rounded-lg items-center w-[250px] flex h-12 overflow-hidden px-1 border-gray-400'>
+                <input
+                  type="text"
+                  value={foregroundColor}
+                  onChange={(e) => setForegroundColor(e.target.value)}
+                  className='p-2 w-[200px]'
+                />
+                <input
+                  type="color"
+                  value={foregroundColor}
+                  onChange={(e) => setForegroundColor(e.target.value)}
+                  id='style2'
+                />
+              </div>
+            </label>
+          </div>
+          {contrastRatio !== null && (
+            <div className='flex-col gap-4 mt-4 flex'>
+
+              <div className="flex-row flex gap-4">
+
+                <button 
+                // style={{ color: contrastRatio < 3 ? textColor : foregroundColor }} 
+                className='bg-black p-3 rounded-md text-white' onClick={switchColors}>Switch Colors</button>
+
+                <button className='bg-black p-3 rounded-md text-white'
+                  onClick={() => saveColors()}
+                >save</button>
+              </div>
+              <div className="flex gap-2">
+                {savedColors?.map((colorPair, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleColorSelection(colorPair)}
+                    style={{
+                      backgroundColor: colorPair.backgroundColor,
+                      color: colorPair.foregroundColor,
+                    }}
+                    className='p-3 border border-black font-extrabold rounded-md'
+                  >
+                    Aa
+                  </button>
+                ))}
+              </div>
+
+              {!contrastPass.smallText && !contrastPass.largeText && (
+                <div className='flex-col gap-2' style={{ color: textColor }}>
+                  <div>
+                    <button onClick={() => enhanceContrast('background', contrastRatio)}>Enhance Background Contrast</button>
+                  </div>
+                  <div>
+                    <button onClick={() => enhanceContrast('foreground', contrastRatio)}>Enhance Foreground Contrast</button>
+                  </div>
+                  <div>
+                    <button onClick={() => enhanceContrast('both', contrastRatio)}>Enhance Both Contrasts</button>
+                  </div>
+                </div>
+              )}
+
+              {/* {contrastPass.smallText && contrastPass.largeText && <p>Contrast ratio passes both small and large text requirements.</p>}
+        {contrastPass.smallText && !contrastPass.largeText && <p>Contrast ratio passes small text requirements.</p>}
+        {!contrastPass.smallText && contrastPass.largeText && <p>Contrast ratio passes large text requirements.</p>} */}
+            </div>
+          )}
+
+          {/* <div style={{ display: 'flex', alignItems: 'center' }}>
+          {palette.map((color, index) => (
+            <div
+              key={index}
+              style={{
+                width: '50px',
+                height: '50px',
+                backgroundColor: color,
+                marginRight: '5px',
+              }}
+            />
+          ))}
+        </div> */}
+        </div>
       </div>
     </div>
   );

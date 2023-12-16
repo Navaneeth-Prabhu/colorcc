@@ -26,18 +26,19 @@ body {
     rgb(var(--background-start-rgb)); */
 }
 
-#style1,#style2{
+#style1,
+#style2 {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
   border: none;
   height: 40px;
-  width: 40px;
+  width: 38px;
   background-color: transparent;
 }
 
-#style1::-webkit-color-swatch,#style2::-webkit-color-swatch{
+#style1::-webkit-color-swatch,
+#style2::-webkit-color-swatch {
   border-radius: 5px;
   border-color: '#f2f2f2';
 }
-
