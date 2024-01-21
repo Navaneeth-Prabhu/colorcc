@@ -14,13 +14,25 @@ export const MyContextProvider = ({ children }) => {
     const [textColor, setTextColor] = useState('#000000');
     const [contrastRatio, setContrastRatio] = useState(null);
     const [contrastPass, setContrastPass] = useState(null);
-    const [palette, setPalette] = useState([]);
     const [savedColors, setSavedColors] = useState([]);
     // gradinet
     const [colors, setColors] = useState(['', '']); // Default colors
-    const [paletteColor,setPaletteColor] = useState('#c33f3f')
+    // ''palettecolors
+    const [paletteColor, setPaletteColor] = useState('');
+    const [lightPalette, setLightPalette] = useState([]);
+    const [darkPalette, setDarkPalette] = useState([]);
+    const [huePalette, setHuePalette] = useState([]);
 
 
+
+
+    useEffect(() => {
+        const initialColors = getRandomColor();
+        setPaletteColor(initialColors);
+        generateDarkPalette(initialColors);
+        generateLightPalette(initialColors);
+        generateHuePalette(initialColors);
+    }, []);
 
     useEffect(() => {
         calculateContrastRatio();
@@ -82,49 +94,6 @@ export const MyContextProvider = ({ children }) => {
             uiComponentAAA: contrastPassUIComponentAAA,
         });
     };
-
-
-    // const calculateContrastRatio = () => {
-    //     const hexToRgb = (hex) => {
-    //         const bigint = parseInt(hex.slice(1), 16);
-    //         const r = (bigint >> 16) & 255;
-    //         const g = (bigint >> 8) & 255;
-    //         const b = bigint & 255;
-    //         return [r, g, b];
-    //     };
-
-    //     const rgbToLuminance = (rgb) => {
-    //         const srgb = (c) => {
-    //             c /= 255;
-    //             return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
-    //         };
-    //         const gamma = (c) => srgb(c) * 255;
-    //         return 0.2126 * gamma(rgb[0]) + 0.7152 * gamma(rgb[1]) + 0.0722 * gamma(rgb[2]);
-    //     };
-
-    //     const bgRgb = hexToRgb(backgroundColor);
-    //     const fgRgb = hexToRgb(foregroundColor);
-
-    //     const bgLuminance = rgbToLuminance(bgRgb) / 255;
-    //     const fgLuminance = rgbToLuminance(fgRgb) / 255;
-
-    //     const contrast = (l1, l2) => {
-    //         const lighter = Math.max(l1, l2);
-    //         const darker = Math.min(l1, l2);
-    //         return (lighter + 0.05) / (darker + 0.05);
-    //     };
-
-    //     const ratio = contrast(bgLuminance, fgLuminance);
-    //     setContrastRatio(ratio.toFixed(2));
-
-    //     const contrastPassSmallText = ratio >= 4.5;
-    //     const contrastPassLargeText = ratio >= 3;
-
-    //     setContrastPass({
-    //         smallText: contrastPassSmallText,
-    //         largeText: contrastPassLargeText,
-    //     });
-    // };
 
 
     // const enhanceContrast = (type) => {
@@ -245,36 +214,6 @@ export const MyContextProvider = ({ children }) => {
         return luminance > 0.5 ? '#000000' : '#FFFFFF'; // Black for light background, white for dark background
     };
 
-    // useEffect(() => {
-    //     const generateColorPalette = (foregroundColor) => {
-    //         const baseColorObj = Color(foregroundColor);
-
-    //         const newPalette = [];
-    //         for (let i = 0; i < 8; i++) {
-    //             const adjustedColor = baseColorObj.lightness(baseColorObj.lightness() + i * 5);
-    //             newPalette.push(adjustedColor.hex());
-    //         }
-
-    //         setPalette(newPalette);
-    //     };
-
-    //     generateColorPalette(foregroundColor);
-    // }, [foregroundColor]);
-
-
-        const generateColorPalette = (paletteColor) => {
-            const baseColorObj = Color(paletteColor);
-    
-            const newPalette = [];
-            for (let i = 0; i < 10; i++) {
-                // You can adjust the lightness or other properties based on your preference
-                const adjustedColor = baseColorObj.darken(i * 0.1); // Adjust the factor as needed
-                newPalette.push(adjustedColor.hex());
-            }
-            setPalette(newPalette);
-        };
-
-
     const saveColors = () => {
         // Check if the color pair already exists
         const colorExists = savedColors.some(
@@ -293,6 +232,51 @@ export const MyContextProvider = ({ children }) => {
     };
 
 
+    const getRandomColor = () => {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    };
+
+    const generateDarkPalette = (paletteColor) => {
+        const baseColorObj = Color(paletteColor);
+
+        const newPalette = [];
+        for (let i = 0; i < 10; i++) {
+            // Mix the base color with black to create a shade
+            const shadedColor = baseColorObj.mix(Color('black'), i * 0.1);
+            newPalette.push(shadedColor.hex());
+        }
+        setDarkPalette(newPalette);
+    };
+
+    const generateLightPalette = (paletteColor) => {
+        const baseColorObj = Color(paletteColor);
+
+        const newPalette = [];
+        for (let i = 0; i < 10; i++) {
+            // Mix the base color with white to create a tint
+            const tintedColor = baseColorObj.mix(Color('white'), i * 0.1);
+            newPalette.push(tintedColor.hex());
+        }
+        setLightPalette(newPalette);
+    };
+
+    const generateHuePalette = (paletteColor) => {
+        const baseColorObj = Color(paletteColor);
+    
+        const newPalette = [];
+        for (let i = 0; i < 10; i++) {
+            // Adjust the hue of the base color
+            const adjustedColor = baseColorObj.hue(baseColorObj.hue() + i * 36); // 36 degrees per step, you can adjust this value
+            newPalette.push(adjustedColor.hex());
+        }
+        setHuePalette(newPalette);
+    };
+    
     // In your component or context
     const handleColorSelection = (selectedColorPair) => {
         setBackgroundColor(selectedColorPair.backgroundColor);
@@ -308,15 +292,22 @@ export const MyContextProvider = ({ children }) => {
         contrastRatio,
         enhanceContrast,
         switchColors, contrastPass, textColor,
-        palette,
+
         saveColors,
         savedColors,
         handleColorSelection,
         colors,
         setColors,
         paletteColor,
-        setPaletteColor,
-        generateColorPalette
+        setPaletteColor: (newColor) => {
+            setPaletteColor(newColor);
+            generateDarkPalette(newColor);
+            generateLightPalette(newColor);
+            generateHuePalette(newColor);
+        },
+        lightPalette,
+        darkPalette,
+        huePalette,
     };
 
     return (
