@@ -16,8 +16,12 @@ export const MyContextProvider = ({ children }) => {
     const [contrastPass, setContrastPass] = useState(null);
     const [palette, setPalette] = useState([]);
     const [savedColors, setSavedColors] = useState([]);
+    // gradinet
+    const [colors, setColors] = useState(['', '']); // Default colors
+    const [paletteColor,setPaletteColor] = useState('#c33f3f')
 
-      
+
+
     useEffect(() => {
         calculateContrastRatio();
     }, [backgroundColor, foregroundColor]);
@@ -27,7 +31,7 @@ export const MyContextProvider = ({ children }) => {
         setTextColor(textColor)
     }, [backgroundColor])
 
-    
+
 
     const calculateContrastRatio = () => {
         const hexToRgb = (hex) => {
@@ -37,7 +41,7 @@ export const MyContextProvider = ({ children }) => {
             const b = bigint & 255;
             return [r, g, b];
         };
-    
+
         const rgbToLuminance = (rgb) => {
             const srgb = (c) => {
                 c /= 255;
@@ -46,29 +50,29 @@ export const MyContextProvider = ({ children }) => {
             const gamma = (c) => srgb(c) * 255;
             return 0.2126 * gamma(rgb[0]) + 0.7152 * gamma(rgb[1]) + 0.0722 * gamma(rgb[2]);
         };
-    
+
         const bgRgb = hexToRgb(backgroundColor);
         const fgRgb = hexToRgb(foregroundColor);
-    
+
         const bgLuminance = rgbToLuminance(bgRgb) / 255;
         const fgLuminance = rgbToLuminance(fgRgb) / 255;
-    
+
         const contrast = (l1, l2) => {
             const lighter = Math.max(l1, l2);
             const darker = Math.min(l1, l2);
             return (lighter + 0.05) / (darker + 0.05);
         };
-    
+
         const ratio = contrast(bgLuminance, fgLuminance);
         setContrastRatio(ratio.toFixed(2));
-    
+
         const contrastPassSmallTextAA = ratio >= 4.5;
         const contrastPassLargeTextAA = ratio >= 3;
         const contrastPassSmallTextAAA = ratio >= 7;
         const contrastPassLargeTextAAA = ratio >= 4.5;
         const contrastPassUIComponentAA = ratio >= 3;
         const contrastPassUIComponentAAA = ratio >= 4.5;
-    
+
         setContrastPass({
             smallTextAA: contrastPassSmallTextAA,
             largeTextAA: contrastPassLargeTextAA,
@@ -79,7 +83,7 @@ export const MyContextProvider = ({ children }) => {
         });
     };
 
-    
+
     // const calculateContrastRatio = () => {
     //     const hexToRgb = (hex) => {
     //         const bigint = parseInt(hex.slice(1), 16);
@@ -125,44 +129,44 @@ export const MyContextProvider = ({ children }) => {
 
     // const enhanceContrast = (type) => {
     //     const predefinedColors = ['#E74C3C', '#3498DB', '#2ECC71', '#F39C12', '#9B59B6', '#34495E', '#1ABC9C', '#E67E22'];
-    
+
     //     const getContrastRatio = (color1, color2) => {
     //         const c1 = Color(color1);
     //         const c2 = Color(color2);
     //         return c1.contrast(c2);
     //     };
-    
+
     //     const findColorWithGoodContrast = (baseColor, targetColor) => {
     //         const baseColorObj = Color(baseColor);
     //         const targetColorObj = Color(targetColor);
-    
+
     //         let bestColor = predefinedColors[0];
     //         let bestContrast = getContrastRatio(predefinedColors[0], targetColor);
-    
+
     //         for (let i = 1; i < predefinedColors.length; i++) {
     //             const currentColor = predefinedColors[i];
     //             const currentContrast = getContrastRatio(currentColor, targetColor);
-    
+
     //             if (currentContrast > bestContrast) {
     //                 bestColor = currentColor;
     //                 bestContrast = currentContrast;
     //             }
     //         }
-    
+
     //         return bestColor;
     //     };
-    
+
     //     let newBackgroundColor = backgroundColor;
     //     let newForegroundColor = foregroundColor;
-    
+
     //     if (type === 'both' || type === 'background') {
     //         newBackgroundColor = findColorWithGoodContrast(backgroundColor, foregroundColor);
     //     }
-    
+
     //     if (type === 'both' || type === 'foreground') {
     //         newForegroundColor = findColorWithGoodContrast(foregroundColor, backgroundColor);
     //     }
-    
+
     //     setBackgroundColor(newBackgroundColor);
     //     setForegroundColor(newForegroundColor);
     // };
@@ -224,7 +228,7 @@ export const MyContextProvider = ({ children }) => {
         // Ensure the background color is a valid hex color
         const cleanHex = backgroundColor.replace(/[^0-9A-Fa-f]/g, '');
         if (!/^[0-9A-Fa-f]{6}$/.test(cleanHex)) {
-            console.error('Invalid hex color:', backgroundColor);
+            // console.error('Invalid hex color:', backgroundColor);
             return '#000000'; // Default to black for invalid color
         }
 
@@ -256,20 +260,45 @@ export const MyContextProvider = ({ children }) => {
 
     //     generateColorPalette(foregroundColor);
     // }, [foregroundColor]);
+
+
+        const generateColorPalette = (paletteColor) => {
+            const baseColorObj = Color(paletteColor);
+    
+            const newPalette = [];
+            for (let i = 0; i < 10; i++) {
+                // You can adjust the lightness or other properties based on your preference
+                const adjustedColor = baseColorObj.darken(i * 0.1); // Adjust the factor as needed
+                newPalette.push(adjustedColor.hex());
+            }
+            setPalette(newPalette);
+        };
+
+
     const saveColors = () => {
-        setSavedColors((prevSavedColors) => [
-            ...prevSavedColors,
-            { backgroundColor, foregroundColor },
-        ]);
-        console.log(savedColors)
+        // Check if the color pair already exists
+        const colorExists = savedColors.some(
+            (colorPair) =>
+                colorPair.backgroundColor === backgroundColor &&
+                colorPair.foregroundColor === foregroundColor
+        );
+
+        // If the color pair does not exist, add it to the savedColors array
+        if (!colorExists) {
+            setSavedColors((prevSavedColors) => [
+                ...prevSavedColors,
+                { backgroundColor, foregroundColor },
+            ]);
+        }
     };
 
-// In your component or context
-const handleColorSelection = (selectedColorPair) => {
-    setBackgroundColor(selectedColorPair.backgroundColor);
-    setForegroundColor(selectedColorPair.foregroundColor);
-  };
-  
+
+    // In your component or context
+    const handleColorSelection = (selectedColorPair) => {
+        setBackgroundColor(selectedColorPair.backgroundColor);
+        setForegroundColor(selectedColorPair.foregroundColor);
+    };
+
     const contextValue = {
         backgroundColor,
         foregroundColor,
@@ -282,7 +311,12 @@ const handleColorSelection = (selectedColorPair) => {
         palette,
         saveColors,
         savedColors,
-        handleColorSelection
+        handleColorSelection,
+        colors,
+        setColors,
+        paletteColor,
+        setPaletteColor,
+        generateColorPalette
     };
 
     return (
