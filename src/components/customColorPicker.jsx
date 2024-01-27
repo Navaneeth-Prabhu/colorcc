@@ -19,31 +19,15 @@ const Modal = ({ children, onClose }) => {
 const CustomColorPicker = ({ defaultColor, onChange, contextColor, type }) => {
     const [color, setColor] = useState(defaultColor);
     const [showColorPicker, setShowColorPicker] = useState(false);
-    // const isMobile = window.innerWidth <= 768;
-
     const { setBackgroundColor, setForegroundColor } = useMyContext();
-    useEffect(() => {
-        const handleResize = () => {
-            setShowColorPicker(window.innerWidth <= 768);
-        };
-
-        window.addEventListener('resize', handleResize);
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
-
-    useEffect(() => {
-        setColor(defaultColor);
-    }, [defaultColor]);
 
     const handleChange = (newColor) => {
         const hexColor = newColor.hex;
         setColor(hexColor);
         onChange(hexColor);
-        if (type == 'backgroundColor') {
+        if (type === 'backgroundColor') {
             setBackgroundColor(hexColor);
-        } else if (type == 'foregroundColor') {
+        } else if (type === 'foregroundColor') {
             setForegroundColor(hexColor);
         }
     };
@@ -53,7 +37,7 @@ const CustomColorPicker = ({ defaultColor, onChange, contextColor, type }) => {
         overflow-hidden px-1 border-gray-400 active:border-violet-700'>
             <input
                 type="text"
-                value={color}  // Use the value prop to bind the input value
+                value={color}
                 onChange={(e) => {
                     const newColor = { hex: e.target.value };
                     handleChange(newColor);
@@ -63,13 +47,12 @@ const CustomColorPicker = ({ defaultColor, onChange, contextColor, type }) => {
             <div
                 className='w-9 h-9 rounded-md border border-gray-400'
                 style={{ background: contextColor || color }}
-                onClick={() => setShowColorPicker(!showColorPicker)}
+                onClick={() => setShowColorPicker(true)}  // Open the color picker when this div is clicked
             ></div>
 
             {showColorPicker && (
                 <Modal onClose={() => setShowColorPicker(false)}>
                     <ChromePicker color={contextColor || color} onChange={handleChange} disableAlpha={true} />
-                    {/* <HexColorPicker color={contextColor || color} onChange={handleChange}  disableAlpha={true}/> */}
                 </Modal>
             )}
         </div>
