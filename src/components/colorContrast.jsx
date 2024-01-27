@@ -59,21 +59,7 @@ const ColorContrastComponent = () => {
             <div className='flex flex-col sm:flex-row gap-4 md:mt-4 w-full'>
               <label>
                 <p style={{ color: contrastRatio < 3 ? textColor : foregroundColor }}>Background Color:</p>
-                <div className='bg-white border justify-between rounded-lg items-center flex h-12 md:w-[250px] overflow-hidden px-1 border-gray-400'>
-                  <input
-                    type="text"
-                    value={backgroundColor}
-                    onChange={(e) => setBackgroundColor(e.target.value)}
-                    className='p-2 md:w-[200px]'
-                    id='input1'
-                  />
-                  <input
-                    type="color"
-                    value={backgroundColor}
-                    onChange={(e) => setBackgroundColor(e.target.value)}
-                    id='style1'
-                  />
-                </div>
+                
                 <CustomColorPicker
                   defaultColor={backgroundColor}
                   color={backgroundColor}
@@ -84,22 +70,6 @@ const ColorContrastComponent = () => {
               <label className=''>
                 <p style={{ color: contrastRatio < 3 ? textColor : foregroundColor }}>Foreground Color:</p>
 
-                <div className='bg-white border justify-between rounded-lg items-center md:w-[250px] flex h-12 overflow-hidden px-1 border-gray-400'>
-                  <input
-                    type="text"
-                    value={foregroundColor}
-                    onChange={(e) => setForegroundColor(e.target.value)}
-                    className='p-2 sm:w-full md:w-[200px]'
-                    id='input2'
-                  />
-                  <input
-                    type="color"
-                    value={foregroundColor}
-                    onChange={(e) => setForegroundColor(e.target.value)}
-                    id='style2'
-                  />
-
-                </div>
 
                 <CustomColorPicker
                   defaultColor={foregroundColor}
@@ -158,7 +128,7 @@ const ColorContrastComponent = () => {
             )}
 
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              {palette.map((color, index) => (
+              {palette?.map((color, index) => (
                 <div className='flex flex-col'>
                 <div
                   key={index}
