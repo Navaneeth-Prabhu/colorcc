@@ -19,7 +19,7 @@ const Modal = ({ children, onClose }) => {
 const CustomColorPicker = ({ defaultColor, onChange, contextColor, type }) => {
     const [color, setColor] = useState(defaultColor);
     const [showColorPicker, setShowColorPicker] = useState(false);
-    const isMobile = window.innerWidth <= 768;
+    // const isMobile = window.innerWidth <= 768;
 
     const { setBackgroundColor, setForegroundColor } = useMyContext();
     useEffect(() => {

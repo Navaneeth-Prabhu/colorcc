@@ -129,7 +129,7 @@ const ColorContrastComponent = () => {
 
             <div style={{ display: 'flex', alignItems: 'center' }}>
               {palette?.map((color, index) => (
-                <div className='flex flex-col'>
+                <div key={index} className='flex flex-col'>
                 <div
                   key={index}
                   style={{
