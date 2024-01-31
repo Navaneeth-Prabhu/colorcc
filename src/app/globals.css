@@ -73,6 +73,18 @@ body {
   z-index: 999999;
 }
 
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+  .modal-overlay {
+    height: 100%;
+  }
+
+  .modal {
+    transform: translateY(0);
+  }
+}
+
+
 .modal-overlay.active {
   height: 100%;
 }

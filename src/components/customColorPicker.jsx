@@ -35,7 +35,7 @@ const CustomColorPicker = ({ defaultColor, onChange, contextColor, type }) => {
 
     return (
         <div className='bg-white border justify-between rounded-lg items-center flex flex-1 h-12 md:w-[250px] 
-        overflow-hidden px-1 border-gray-400 active:border-violet-700'>
+        overflow-hidden px-1 border-gray-400 active:border-violet-700 '>
             <input
                 type="text"
                 value={defaultColor}
