@@ -58,7 +58,7 @@ body {
 }
 
 .modal {
-  background: #fff;
+  background: #363636;
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
@@ -70,6 +70,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 999999;
 }
 
 .modal-overlay.active {
@@ -88,6 +89,19 @@ body {
   cursor: pointer;
 }
 
+@media (min-width: 768px) {
+  .modal-overlay {
+    background: rgba(0, 0, 0, 0);
+  }
+
+  .modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30%;
+  }
+}
 
 .google-color-picker {
   display: flex;
@@ -107,4 +121,52 @@ input[type="color"] {
   height: 24px;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+.chrome{
+  width: 275px;
+    overflow: hidden !important;
+}
+
+/* Custom poiners */
+.custom-pointers .react-colorful__saturation-pointer {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+}
+.custom-pointers .react-colorful__hue-pointer,
+.custom-pointers .react-colorful__alpha-pointer {
+  width: 16px;
+  border-radius: 3px;
+}
+
+
+/* Custom layout */
+.custom-layout .react-colorful {
+  padding: 16px;
+  border-radius: 12px;
+  background: #33333a;
+  box-shadow: 0 6px 12px #999;
+}
+
+.custom-layout .react-colorful__saturation {
+  margin: 15px 0;
+  border-radius: 5px;
+  border-bottom: none;
+}
+
+.custom-layout .react-colorful__hue {
+  /* order: -1; */
+}
+
+.custom-layout .react-colorful__hue,
+.custom-layout .react-colorful__alpha {
+  height: 14px;
+  border-radius: 5px;
+}
+
+.custom-layout .react-colorful__hue-pointer,
+.custom-layout .react-colorful__alpha-pointer {
+  width: 20px;
+  height: 20px;
 }

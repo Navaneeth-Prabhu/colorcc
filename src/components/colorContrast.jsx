@@ -22,8 +22,15 @@ const ColorContrastComponent = () => {
     setBackgroundColor,
     setForegroundColor, palette } = useMyContext();
 
+  const renderContrastStatus = (label, condition) => (
+    <p style={{ color: contrastRatio < 3 ? textColor : foregroundColor }}>
+      {label}: <span className='text-lg font-semibold'>{condition ? 'Pass' : 'Fail'}</span>
+    </p>
+  );
+
+
   return (
-    <div className='h-screen ' style={{ background: backgroundColor }}>
+    <div className='h-auto m-auto' style={{ background: backgroundColor }}>
       <div className=' w-full  flex flex-col gap-4 p-7 md:p-10 max-w-[1440px] m-auto'>
         <div className=' lg:py-5 lg:px-10'>
           <h2 className='text-3xl md:text-4xl font-semibold' style={{ color: contrastRatio < 3 ? textColor : foregroundColor }}>Color Contrast Checker</h2>
@@ -38,28 +45,18 @@ const ColorContrastComponent = () => {
           <div className=' flex  flex-col flex-1 gap-4 justify-start items-start lg:px-10 lg:border-l-2 lg:gap-2'>
             <p className='text-md font-bold' style={{ color: contrastRatio < 3 ? textColor : foregroundColor }}>Contrast : <span className='text-5xl'>{contrastRatio}</span></p>
             <div className='flex flex-col md:flex-row md:gap-4'>
-
-              {contrastPass?.smallTextAA
-                ? <p style={{ color: contrastRatio < 3 ? textColor : foregroundColor }}>smallTextAA: <span className='text-lg font-semibold'>Pass</span></p>
-                : <p style={{ color: contrastRatio < 3 ? textColor : foregroundColor }}>smallTextAA: <span className='text-lg font-semibold'>Fail</span></p>}
-
-              {contrastPass?.smallTextAAA
-                ? <p style={{ color: contrastRatio < 3 ? textColor : foregroundColor }}>smallTextAAA: <span className='text-lg font-semibold'>Pass</span></p>
-                : <p style={{ color: contrastRatio < 3 ? textColor : foregroundColor }}>smallTextAAA: <span className='text-lg font-semibold'>Fail</span></p>}
+              {renderContrastStatus('smallTextAA', contrastPass?.smallTextAA)}
+              {renderContrastStatus('smallTextAAA', contrastPass?.smallTextAAA)}
             </div>
             <div className='flex flex-col md:flex-row md:gap-4'>
-
-              {contrastPass?.largeTextAA
-                ? <p style={{ color: contrastRatio < 3 ? textColor : foregroundColor }}>largeTextAA: <span className='text-lg font-semibold'>Pass</span></p>
-                : <p style={{ color: contrastRatio < 3 ? textColor : foregroundColor }}>largeTextAA: <span className='text-lg font-semibold'>Fail</span></p>}
-              {contrastPass?.largeTextAAA
-                ? <p style={{ color: contrastRatio < 3 ? textColor : foregroundColor }}>largeTextAAA: <span className='text-lg font-semibold'>Pass</span></p>
-                : <p style={{ color: contrastRatio < 3 ? textColor : foregroundColor }}>largeTextAAA: <span className='text-lg font-semibold'>Fail</span></p>}
+              {renderContrastStatus('largeTextAA', contrastPass?.largeTextAA)}
+              {renderContrastStatus('largeTextAAA', contrastPass?.largeTextAAA)}
             </div>
+
             <div className='flex flex-col sm:flex-row gap-4 md:mt-4 w-full'>
-              <label>
+              <label className='w-full'>
                 <p style={{ color: contrastRatio < 3 ? textColor : foregroundColor }}>Background Color:</p>
-                
+
                 <CustomColorPicker
                   defaultColor={backgroundColor}
                   color={backgroundColor}
@@ -67,24 +64,20 @@ const ColorContrastComponent = () => {
                   onChange={(color) => setBackgroundColor(color)} />
               </label>
 
-              <label className=''>
+              <label className='w-full'>
                 <p style={{ color: contrastRatio < 3 ? textColor : foregroundColor }}>Foreground Color:</p>
-
-
                 <CustomColorPicker
                   defaultColor={foregroundColor}
                   color={foregroundColor}
                   type='foregroundColor'
                   onChange={(color) => setForegroundColor(color)} />
               </label>
-              {/* <ColorPicker></ColorPicker> */}
 
             </div>
             {contrastRatio !== null && (
-              <div className='flex-col gap-4 flex w-full'>
+              <div className='flex-col gap-4 flex w-full mt-5'>
                 <div className="flex flex-col sm:flex-row gap-4 md:mt-4 w-full">
                   <button
-                    // style={{ color: contrastRatio < 3 ? textColor : foregroundColor }} 
                     className='bg-black p-3 rounded-md md:w-fit w-full text-white' onClick={switchColors}>Switch Colors</button>
 
                   <button className='bg-black p-3 rounded-md md:w-fit w-full text-white'
@@ -126,23 +119,6 @@ const ColorContrastComponent = () => {
         {!contrastPass.smallText && contrastPass.largeText && <p>Contrast ratio passes large text requirements.</p>} */}
               </div>
             )}
-
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              {palette?.map((color, index) => (
-                <div key={index} className='flex flex-col'>
-                <div
-                  key={index}
-                  style={{
-                    width: '50px',
-                    height: '50px',
-                    backgroundColor: color,
-                    // marginRight: '5px',
-                  }}
-                />
-                <label>{color}</label>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </div>

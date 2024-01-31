@@ -1,12 +1,12 @@
 import { useMyContext } from '@/context/store';
 import React, { useState, useEffect } from 'react';
 import { ChromePicker } from 'react-color';
-import { HexColorPicker } from "react-colorful";
+import { HexColorPicker,RgbaColorPicker,HslColorPicker } from "react-colorful";
 
 const Modal = ({ children, onClose }) => {
     return (
-        <div className={`modal-overlay ${onClose ? 'active' : ''}`} onClick={onClose}>
-            <div className={`modal ${onClose ? 'active' : ''}`} onClick={(e) => e.stopPropagation()}>
+        <div className={`modal-overlay ${onClose ? 'active' : ''} `} onClick={onClose}>
+            <div className={`modal ${onClose ? 'active' : ''} `} onClick={(e) => e.stopPropagation()}>
                 <span className="close-button" onClick={onClose}>
                     &times;
                 </span>
@@ -22,7 +22,8 @@ const CustomColorPicker = ({ defaultColor, onChange, contextColor, type }) => {
     const { setBackgroundColor, setForegroundColor } = useMyContext();
 
     const handleChange = (newColor) => {
-        const hexColor = newColor.hex;
+        const hexColor = newColor;
+        console.log(hexColor);
         setColor(hexColor);
         onChange(hexColor);
         if (type === 'backgroundColor') {
@@ -30,29 +31,31 @@ const CustomColorPicker = ({ defaultColor, onChange, contextColor, type }) => {
         } else if (type === 'foregroundColor') {
             setForegroundColor(hexColor);
         }
-    };
+    };    
 
     return (
-        <div className='bg-white border justify-between rounded-lg items-center flex h-12 md:w-[250px] 
-        overflow-hidden px-1 border-gray-400 active:border-violet-700'>
+        <div className='bg-white border justify-between rounded-lg items-center flex flex-1 h-12 md:w-[250px] 
+        overflow-hidden px-1 border-gray-400 active:border-violet-700 relative'>
             <input
                 type="text"
-                value={color}
+                value={defaultColor}
                 onChange={(e) => {
-                    const newColor = { hex: e.target.value };
+                    const newColor = e.target.value ;
                     handleChange(newColor);
                 }}
                 className='p-2 md:w-[200px]'
             />
+
             <div
                 className='w-9 h-9 rounded-md border border-gray-400'
-                style={{ background: contextColor || color }}
+                style={{ background: contextColor || defaultColor }}
                 onClick={() => setShowColorPicker(true)}  // Open the color picker when this div is clicked
             ></div>
 
             {showColorPicker && (
                 <Modal onClose={() => setShowColorPicker(false)}>
-                    <ChromePicker color={contextColor || color} onChange={handleChange} disableAlpha={true} />
+                    {/* <ChromePicker className='chrome' color={contextColor || defaultColor} onChange={handleChange} disableAlpha={true} /> */}
+                    <HexColorPicker className='custom-pointers custom-layout' color={contextColor || defaultColor} onChange={handleChange} disableAlpha={true} />
                 </Modal>
             )}
         </div>

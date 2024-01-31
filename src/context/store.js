@@ -95,52 +95,6 @@ export const MyContextProvider = ({ children }) => {
         });
     };
 
-
-    // const enhanceContrast = (type) => {
-    //     const predefinedColors = ['#E74C3C', '#3498DB', '#2ECC71', '#F39C12', '#9B59B6', '#34495E', '#1ABC9C', '#E67E22'];
-
-    //     const getContrastRatio = (color1, color2) => {
-    //         const c1 = Color(color1);
-    //         const c2 = Color(color2);
-    //         return c1.contrast(c2);
-    //     };
-
-    //     const findColorWithGoodContrast = (baseColor, targetColor) => {
-    //         const baseColorObj = Color(baseColor);
-    //         const targetColorObj = Color(targetColor);
-
-    //         let bestColor = predefinedColors[0];
-    //         let bestContrast = getContrastRatio(predefinedColors[0], targetColor);
-
-    //         for (let i = 1; i < predefinedColors.length; i++) {
-    //             const currentColor = predefinedColors[i];
-    //             const currentContrast = getContrastRatio(currentColor, targetColor);
-
-    //             if (currentContrast > bestContrast) {
-    //                 bestColor = currentColor;
-    //                 bestContrast = currentContrast;
-    //             }
-    //         }
-
-    //         return bestColor;
-    //     };
-
-    //     let newBackgroundColor = backgroundColor;
-    //     let newForegroundColor = foregroundColor;
-
-    //     if (type === 'both' || type === 'background') {
-    //         newBackgroundColor = findColorWithGoodContrast(backgroundColor, foregroundColor);
-    //     }
-
-    //     if (type === 'both' || type === 'foreground') {
-    //         newForegroundColor = findColorWithGoodContrast(foregroundColor, backgroundColor);
-    //     }
-
-    //     setBackgroundColor(newBackgroundColor);
-    //     setForegroundColor(newForegroundColor);
-    // };
-
-
     const enhanceContrast = (type) => {
         const hexToRgb = (hex) => {
             const bigint = parseInt(hex.slice(1), 16);

@@ -19,6 +19,11 @@ const GradientMaker = () => {
     }
   };
 
+  const handleRemove = (index) => {
+    const newColor = colors.filter((color,i) => i !== index);
+    setColors(newColor)
+  }
+
   const handleRandomColor = () => {
     const newRandomColors = Array.from({ length: 2 }, () => getRandomColor());
     setColors(newRandomColors);
@@ -35,31 +40,36 @@ const GradientMaker = () => {
 
   const gradientStyle = {
     background: `linear-gradient(${rotation}deg, ${colors.join(', ')})`,
-    marginTop: '20px',
   };
 
   const cssCode = `background: linear-gradient(${rotation}deg, ${colors.join(', ')});`;
 
   return (
-    <div className='flex justify-around items-center h-screen' style={gradientStyle}>
+    <div className='flex justify-around items-center h-auto' style={gradientStyle}>
       <div className='flex flex-col gap-4'>
         {colors.map((color, index) => (
-          <div key={index}>
-            <label>{`Color ${index + 1}:`}</label>
+          <div key={index} >
+            <div className='flex justify-between'>
+              <label>{`Color ${index + 1}:`}</label>
+              {
+                colors?.length > 2 &&
+                <label onClick={() => handleRemove(index)}>remove</label>
+              }
+            </div>
             <CustomColorPicker defaultColor={color} onChange={(newColor) => handleColorChange(index, newColor)} />
           </div>
         ))}
         <div className='flex justify-between'>
 
-        {colors.length < 10 && (
-          <button    className='p-3 border border-black font-extrabold rounded-md' onClick={handleAddColor}>
-            Add Color
-          </button>
-        )}
+          {colors.length < 5 && (
+            <button className='p-3 border border-black font-extrabold rounded-md' onClick={handleAddColor}>
+              Add Color
+            </button>
+          )}
 
-        <button    className='p-3 border border-black font-extrabold rounded-md' onClick={handleRandomColor}>
-          Random
-        </button>
+          <button className='p-3 border border-black font-extrabold rounded-md' onClick={handleRandomColor}>
+            Random
+          </button>
         </div>
 
         <div>
