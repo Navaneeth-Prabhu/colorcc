@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useMyContext } from '@/context/store';
 import { ChromePicker } from 'react-color';
+import { HexColorPicker } from "react-colorful";
 
 const Modal = ({ children, onClose }) => {
     return (
@@ -27,12 +28,12 @@ const Modal = ({ children, onClose }) => {
 // };
 
 function Page() {
-    const { paletteColor, setPaletteColor, lightPalette, darkPalette,huePalette } = useMyContext();
+    const { paletteColor, setPaletteColor, lightPalette, darkPalette, huePalette } = useMyContext();
     const [showColorPicker, setShowColorPicker] = useState(false);
 
     console.log(darkPalette, lightPalette)
     const handleChange = (newColor) => {
-        const hexColor = newColor.hex;
+        const hexColor = newColor;
         setPaletteColor(hexColor);
     };
 
@@ -63,8 +64,8 @@ function Page() {
 
                 {showColorPicker && (
                     <Modal onClose={() => setShowColorPicker(false)}>
-                        <ChromePicker color={paletteColor} onChange={handleChange} disableAlpha={true} />
-                        {/* <HexColorPicker color={contextColor || color} onChange={handleChange}  disableAlpha={true}/> */}
+                        {/* <ChromePicker color={paletteColor} onChange={handleChange} disableAlpha={true} /> */}
+                        <HexColorPicker color={paletteColor} onChange={handleChange} />
                     </Modal>
                 )}
             </div>

@@ -20,7 +20,7 @@ const GradientMaker = () => {
   };
 
   const handleRemove = (index) => {
-    const newColor = colors.filter((color,i) => i !== index);
+    const newColor = colors.filter((color, i) => i !== index);
     setColors(newColor)
   }
 
@@ -45,56 +45,111 @@ const GradientMaker = () => {
   const cssCode = `background: linear-gradient(${rotation}deg, ${colors.join(', ')});`;
 
   return (
-    <div className='flex justify-around items-center h-auto' style={gradientStyle}>
-      <div className='flex flex-col gap-4'>
-        {colors.map((color, index) => (
-          <div key={index} >
-            <div className='flex justify-between'>
-              <label>{`Color ${index + 1}:`}</label>
-              {
-                colors?.length > 2 &&
-                <label onClick={() => handleRemove(index)}>remove</label>
-              }
-            </div>
-            <CustomColorPicker defaultColor={color} onChange={(newColor) => handleColorChange(index, newColor)} />
-          </div>
-        ))}
-        <div className='flex justify-between'>
+    // <div className='flex justify-around items-center h-auto' style={gradientStyle}>
+    //   <div className='flex flex-col gap-4'>
+    //     {colors.map((color, index) => (
+    //       <div key={index} >
+    //         <div className='flex justify-between'>
+    //           <label>{`Color ${index + 1}:`}</label>
+    //           {
+    //             colors?.length > 2 &&
+    //             <label onClick={() => handleRemove(index)}>remove</label>
+    //           }
+    //         </div>
+    //         <CustomColorPicker defaultColor={color} onChange={(newColor) => handleColorChange(index, newColor)} />
+    //       </div>
+    //     ))}
+    //     <div className='flex justify-between'>
 
-          {colors.length < 5 && (
-            <button className='p-3 border border-black font-extrabold rounded-md' onClick={handleAddColor}>
-              Add Color
-            </button>
-          )}
+    //       {colors.length < 5 && (
+    //         <button className='p-3 border border-black font-extrabold rounded-md' onClick={handleAddColor}>
+    //           Add Color
+    //         </button>
+    //       )}
 
-          <button className='p-3 border border-black font-extrabold rounded-md' onClick={handleRandomColor}>
-            Random
-          </button>
-        </div>
+    //       <button className='p-3 border border-black font-extrabold rounded-md' onClick={handleRandomColor}>
+    //         Random
+    //       </button>
+    //     </div>
 
-        <div>
-          <label>Rotation:</label>
-          <input
-            type="range"
-            min="0"
-            max="360"
-            value={rotation}
-            onChange={handleRotationChange}
-          />
-        </div>
+    //     <div>
+    //       <label>Rotation:</label>
+    //       <input
+    //         type="range"
+    //         min="0"
+    //         max="360"
+    //         value={rotation}
+    //         onChange={handleRotationChange}
+    //       />
+    //     </div>
+    //   </div>
+
+    //   <div className='rounded-lg h-screen bg-red-950' style={gradientStyle}></div>
+
+    //   <div>
+    //     <label>CSS Gradient Code:</label>
+    //     <textarea
+    //       value={cssCode}
+    //       readOnly
+    //       rows={5}
+    //       style={{ width: '300px' }}
+    //       onClick={(e) => e.target.select()} // Auto-select text on click
+    //     />
+    //   </div>
+    // </div>
+    <div className='flex items-center h-auto'>
+      <div className='flex-1 h-screen' style={gradientStyle}>
+
       </div>
+      <div className='w-1/4 bg-gray-900 h-screen p-5 rounded-l-lg'>
+        <div className='flex flex-col gap-4'>
+          {colors.map((color, index) => (
+            <div key={index} >
+              <div className='flex justify-between'>
+                <label className='text-white'>{`Color ${index + 1}:`}</label>
+                {
+                  colors?.length > 2 &&
+                  <label onClick={() => handleRemove(index)}>remove</label>
+                }
+              </div>
+              <CustomColorPicker defaultColor={color} onChange={(newColor) => handleColorChange(index, newColor)} />
+            </div>
+          ))}
+        </div>
+        <div>
+          <div className='flex justify-between'>
 
-      <div className='rounded-lg h-screen bg-red-950' style={gradientStyle}></div>
+            {colors.length < 5 && (
+              <button className='p-3 border border-black font-extrabold rounded-md' onClick={handleAddColor}>
+                Add Color
+              </button>
+            )}
 
-      <div>
-        <label>CSS Gradient Code:</label>
-        <textarea
-          value={cssCode}
-          readOnly
-          rows={5}
-          style={{ width: '300px' }}
-          onClick={(e) => e.target.select()} // Auto-select text on click
-        />
+            <button className='p-3 border border-black font-extrabold rounded-md' onClick={handleRandomColor}>
+              Random
+            </button>
+          </div>
+          <div>
+            <label>Rotation:</label>
+            <input
+              type="range"
+              min="0"
+              max="360"
+              value={rotation}
+              onChange={handleRotationChange}
+            />
+          </div>
+          <div>
+            <label>CSS Gradient Code:</label>
+            <textarea
+              value={cssCode}
+              readOnly
+              rows={5}
+              style={{ width: '300px' }}
+              onClick={(e) => e.target.select()} // Auto-select text on click
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
