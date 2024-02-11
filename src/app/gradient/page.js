@@ -98,7 +98,7 @@ const GradientMaker = () => {
     //   </div>
     // </div>
     <div className='flex items-center h-auto'>
-      <div className='flex-1 h-screen' style={gradientStyle}>
+      <div className='flex-1 h-60 w-full' style={gradientStyle}>
 
       </div>
       <div className='w-1/4 bg-gray-900 h-screen p-5 rounded-l-lg'>
