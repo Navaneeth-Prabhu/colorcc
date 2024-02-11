@@ -16,7 +16,7 @@ export const MyContextProvider = ({ children }) => {
     const [contrastPass, setContrastPass] = useState(null);
     const [savedColors, setSavedColors] = useState([]);
     // gradinet
-    const [colors, setColors] = useState(['', '']); // Default colors
+    const [colors, setColors] = useState([]); // Default colors
     // ''palettecolors
     const [paletteColor, setPaletteColor] = useState('');
     const [lightPalette, setLightPalette] = useState([]);

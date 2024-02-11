@@ -16,7 +16,7 @@ const Modal = ({ children, onClose }) => {
     );
 };
 
-const CustomColorPicker = ({ defaultColor, onChange, contextColor, type }) => {
+const CustomColorPicker = ({ defaultColor, onChange, contextColor, type, Inputtype }) => {
     const [color, setColor] = useState(defaultColor);
     const [showColorPicker, setShowColorPicker] = useState(false);
     const { setBackgroundColor, setForegroundColor } = useMyContext();
@@ -37,7 +37,7 @@ const CustomColorPicker = ({ defaultColor, onChange, contextColor, type }) => {
         <div className='bg-white border justify-between rounded-lg items-center flex flex-1 h-12 md:w-[250px] 
         overflow-hidden px-1 border-gray-400 active:border-violet-700'>
             <input
-                type="text"
+                type={Inputtype ? Inputtype : "text" }
                 value={defaultColor}
                 onChange={(e) => {
                     const newColor = e.target.value ;
@@ -46,11 +46,14 @@ const CustomColorPicker = ({ defaultColor, onChange, contextColor, type }) => {
                 className='p-2 md:w-[200px]'
             />
 
+            {
+                !Inputtype &&
             <div
                 className='w-9 h-9 rounded-md border border-gray-400'
                 style={{ background: contextColor || defaultColor }}
                 onClick={() => setShowColorPicker(true)}  // Open the color picker when this div is clicked
             ></div>
+            }
 
             {showColorPicker && (
                 <Modal onClose={() => setShowColorPicker(false)}>
