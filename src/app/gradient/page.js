@@ -4,29 +4,29 @@ import CustomColorPicker from '@/components/customColorPicker';
 import { useMyContext } from '@/context/store';
 
 const GradientMaker = () => {
-  const { colors, setColors } = useMyContext();
+  const { colorsList, setcolorsList } = useMyContext();
   const [rotation, setRotation] = useState(90);
 
   const handleColorChange = (index, newColor) => {
-    const newColors = [...colors];
+    const newColors = [...colorsList];
     newColors[index] = newColor;
-    setColors(newColors);
+    setcolorsList(newColors);
   };
 
   const handleAddColor = () => {
-    if (colors.length < 10) {
-      setColors([...colors, getRandomColor()]);
+    if (colorsList.length < 10) {
+      setcolorsList([...colorsList, getRandomColor()]);
     }
   };
 
   const handleRemove = (index) => {
-    const newColor = colors.filter((color, i) => i !== index);
-    setColors(newColor)
+    const newColor = colorsList.filter((color, i) => i !== index);
+    setcolorsList(newColor)
   }
 
   const handleRandomColor = () => {
     const newRandomColors = Array.from({ length: 2 }, () => getRandomColor());
-    setColors(newRandomColors);
+    setcolorsList(newRandomColors);
   };
 
   const handleRotationChange = (e) => {
@@ -35,14 +35,14 @@ const GradientMaker = () => {
 
   useEffect(() => {
     const initialColors = Array.from({ length: 2 }, () => getRandomColor());
-    setColors(initialColors);
+    setcolorsList(initialColors);
   }, []);
 
   const gradientStyle = {
-    background: `linear-gradient(${rotation}deg, ${colors.join(', ')})`,
+    background: `linear-gradient(${rotation}deg, ${colorsList.join(', ')})`,
   };
 
-  const cssCode = `background: linear-gradient(${rotation}deg, ${colors.join(', ')});`;
+  const cssCode = `background: linear-gradient(${rotation}deg, ${colorsList.join(', ')});`;
 
   return (
     // <div className='flex justify-around items-center h-auto' style={gradientStyle}>
@@ -103,12 +103,12 @@ const GradientMaker = () => {
       </div>
       <div className='w-1/4 bg-gray-900 h-screen p-5 rounded-l-lg'>
         <div className='flex flex-col gap-4'>
-          {colors.map((color, index) => (
+          {colorsList.map((color, index) => (
             <div key={index} >
               <div className='flex justify-between'>
                 <label className='text-white'>{`Color ${index + 1}:`}</label>
                 {
-                  colors?.length > 2 &&
+                  colorsList?.length > 2 &&
                   <label onClick={() => handleRemove(index)}>remove</label>
                 }
               </div>
@@ -119,7 +119,7 @@ const GradientMaker = () => {
         <div>
           <div className='flex justify-between'>
 
-            {colors.length < 5 && (
+            {colorsList.length < 5 && (
               <button className='p-3 border border-black font-extrabold rounded-md' onClick={handleAddColor}>
                 Add Color
               </button>
