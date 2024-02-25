@@ -13,8 +13,8 @@ export const useMyContext = () => {
 };
 
 export const MyContextProvider = ({ children }) => {
-    const [backgroundColor, setBackgroundColor] = useState('#fefefe');
-    const [foregroundColor, setForegroundColor] = useState('#000000');
+    const [backgroundColor, setBackgroundColor] = useState('#00ff15');
+    const [foregroundColor, setForegroundColor] = useState('#13025e');
     const [textColor, setTextColor] = useState('#000000');
     const [contrastRatio, setContrastRatio] = useState(null);
     const [contrastPass, setContrastPass] = useState(null);

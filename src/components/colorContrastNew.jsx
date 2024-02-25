@@ -5,8 +5,10 @@ import ColorPickerComponent from './colorPickerComponent';
 import CustomColorPicker from './customColorPicker';
 import CustomColorPicker2 from './colorPickerComponent';
 import ColorPicker from './reactColor';
-import { useRouter } from 'next/navigation'; 
-import { isValidHex } from '@/Utils/utils';
+import { useRouter } from 'next/navigation';
+import { isValidHex, useThrottledUpdatePath } from '@/Utils/utils';
+import throttle from 'lodash.throttle';
+import debounce from 'lodash.debounce';
 
 const ColorContrastComponent = ({ id }) => {
   const router = useRouter();
@@ -40,72 +42,42 @@ const ColorContrastComponent = ({ id }) => {
     setForegroundColor(foreground);
   };
 
-  useEffect(() => {
-    // Check if id exists and call setIdColors
-    if (id) {
-      setIdColors(id);
+
+  const updatePath = debounce((...colors) => {
+    console.log(colors);
+    const path = colors?.map(color => color?.replace(/^#/, '')).join('-');
+
+    if (router !== undefined) {
+      router.push(`/contrast/${path}`, undefined, { shallow: true });
     }
-  }, [id]);
+}, 1000);
 
-  // function handleBackgroundColorChange(color) {
-  //   if (isValidHex(color)) {
-  //     const normalizedBgColor = isValidHex(color);
-  //     let bg = normalizedBgColor.replace(/^#/, '');
-  //     let fg = foregroundColor.replace(/^#/, '');
-  //     console.log(normalizedBgColor,'normal')
-  //     setBackgroundColor(normalizedBgColor);
-  //     router.push(`/contrast/${bg}-${fg}`,undefined,{shallow:true})
-  //   }
-  // }
 
-  // function handleForegroundColorChange(color) {
-  //   console.log('New foreground color:', color); // Check if the color value is correct
-  //   if (isValidHex(color)) {
-  //     const normalizedFgColor = isValidHex(color);
-  //     console.log('Normalized foreground color:', normalizedFgColor); // Check if the normalized color is correct
-  //     const bg = backgroundColor.replace(/^#/, '');
-  //     const fg = normalizedFgColor.replace(/^#/, '');
-  //     console.log('Background color:', bg); // Check the background color
-  //     console.log('Foreground color:', fg); // Check the foreground color
-  //     setForegroundColor(normalizedFgColor);
-  //     router.push(`/contrast/${bg}-${fg}`, undefined, { shallow: true });
-  //   }
-  // }
-  
-  
   const handleBackgroundColorChange = (color) => {
     if (isValidHex(color)) {
-          console.log(color, 'background color');
+      console.log(color, 'background color');
       const normalizedBgColor = isValidHex(color);
-      let bg = normalizedBgColor.replace(/^#/, '');
-      let fg = foregroundColor.replace(/^#/, '');
-      console.log(normalizedBgColor,'normal')
+      console.log(normalizedBgColor, 'normal')
       setBackgroundColor(normalizedBgColor);
-      router.push(`/contrast/${bg}-${fg}`,undefined,{shallow:true})
+      // updatePath(foregroundColor,normalizedBgColor)
     }
-};
+  };
 
-// Define the onChange handler for foreground color
-const handleForegroundColorChange = (color) => {
-        if (isValidHex(color)) {
+  // Define the onChange handler for foreground color
+  const handleForegroundColorChange = (color) => {
+    if (isValidHex(color)) {
       const normalizedFgColor = isValidHex(color);
-      console.log('Normalized foreground color:', normalizedFgColor); // Check if the normalized color is correct
-      const bg = backgroundColor.replace(/^#/, '');
-      const fg = normalizedFgColor.replace(/^#/, '');
-      console.log('Background color:', bg); // Check the background color
-      console.log('Foreground color:', fg); // Check the foreground color
       setForegroundColor(normalizedFgColor);
-      router.push(`/contrast/${bg}-${fg}`, undefined, { shallow: true });
+      // updatePath(normalizedFgColor,backgroundColor)
     }
-};
+  };
 
 
-  
 
   return (
-    <div className='h-screen mx-auto w-[1400px] pt-10'>
+    <div className='h-screen  mx-auto max-w-[1400px] pt-10'>
       <div className="w-full relative rounded-2xl">
-        <div className="w-full h-96 rounded-3xl p-10 px-20 flex items-center justify-center" style={{ background: backgroundColor }} >
+        <div className="w-full h-80 rounded-3xl p-10 px-20 flex items-center justify-center" style={{ background: backgroundColor }} >
           <div className='flex flex-1 flex-col gap-6'>
             {/* <p className='text-5xl font-bold' style={{ color: foregroundColor }}>hello</p> */}
             <p className='text-2xl font-bold' style={{ color: foregroundColor }}>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iusto quibusdam et velit. Nobis, nulla qui itaque corrupti tempore assumenda iste. Commodi eos cumque assumenda, autem unde illum eius deserunt quod.</p>

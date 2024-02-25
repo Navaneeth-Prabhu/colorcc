@@ -1,7 +1,8 @@
-import { useMyContext } from '@/context/store';
-import React, { useState, useEffect } from 'react';
+import { isValidHex } from '@/Utils/utils';
+import { MyContextProvider, useMyContext } from '@/context/store';
+import React, { useState, useEffect, useMemo, useContext } from 'react';
 import { ChromePicker } from 'react-color';
-import { HexColorPicker,RgbaColorPicker,HslColorPicker } from "react-colorful";
+import { HexColorPicker, RgbaColorPicker, HslColorPicker } from "react-colorful";
 
 const Modal = ({ children, onClose }) => {
     return (
@@ -16,54 +17,52 @@ const Modal = ({ children, onClose }) => {
     );
 };
 
-const CustomColorPicker = ({ defaultColor, onChange, contextColor, type, Inputtype }) => {
+const CustomColorPicker = ({ defaultColor, onChange, Inputtype, id }) => {
     const [color, setColor] = useState(defaultColor);
-    const [showColorPicker, setShowColorPicker] = useState(false);
-    const { setBackgroundColor, setForegroundColor } = useMyContext();
+    const { backgroundColor, foregroundColor, showColorPicker, setShowColorPicker } = useMyContext();
 
     const handleChange = (newColor) => {
-        const hexColor = newColor;
-        console.log(hexColor);
-        setColor(hexColor);
-        onChange(hexColor);
-        if (type === 'backgroundColor') {
-            setBackgroundColor(hexColor);
-        } else if (type === 'foregroundColor') {
-            setForegroundColor(hexColor);
+        if(isValidHex(newColor)){
+            setColor(newColor);
+            onChange(newColor);
         }
-    };    
+    };
+
+    useEffect(() => {
+        // Set the initial color state only once after the initial render
+        setColor(defaultColor);
+    }, []);
 
     return (
-        <div className='bg-white border justify-between rounded-lg items-center flex flex-1 h-12 md:w-[250px] 
-        overflow-hidden px-1 border-gray-400 active:border-violet-700'>
+        <div className='bg-white border justify-between rounded-lg items-center flex flex-1 h-12 md:w-[250px] overflow-hidden px-1 border-gray-400 active:border-violet-700'>
             <input
-                type={Inputtype ? Inputtype : "text" }
-                value={defaultColor}
+                type={Inputtype ? Inputtype : "text"}
+                value={color}
                 onChange={(e) => {
-                    const newColor = e.target.value ;
-                    handleChange(newColor);
+                    const newColor = e.target.value;
+                    setColor(newColor);
+                    onChange(newColor);
                 }}
                 className='p-2 md:w-[200px]'
+                
             />
 
-            {
-                !Inputtype &&
-            <div
-                className='w-9 h-9 rounded-md border border-gray-400'
-                style={{ background: contextColor || defaultColor }}
-                onClick={() => setShowColorPicker(true)}  // Open the color picker when this div is clicked
-            ></div>
+            {!Inputtype &&
+                <div
+                    className='w-9 h-9 rounded-md border border-gray-400'
+                    style={{ background:  defaultColor }}
+                    onClick={() => setShowColorPicker(id, true)}
+                ></div>
             }
 
-            {showColorPicker && (
-                <Modal onClose={() => setShowColorPicker(false)}>
-                    {/* <ChromePicker className='chrome' color={contextColor || defaultColor} onChange={handleChange} disableAlpha={true} /> */}
-                    <HexColorPicker className='custom-pointers custom-layout' color={contextColor || defaultColor} onChange={handleChange} />
+            {showColorPicker(id) && (
+                <Modal onClose={() => setShowColorPicker(id, false)}>
+                    <HexColorPicker className='custom-pointers custom-layout' color={ defaultColor} onChange={handleChange}/>
                 </Modal>
             )}
         </div>
     );
 };
 
-export default CustomColorPicker;
 
+export default CustomColorPicker;

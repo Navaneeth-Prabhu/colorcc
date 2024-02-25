@@ -2,9 +2,11 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-function Tools() {
+function PalettePage() {
   const [randomId, setRandomId] = useState('');
   const router = useRouter();
+  const [backgroundColor, setBackgroundColor] = useState('#fefefe');
+  const [foregroundColor, setForegroundColor] = useState('#000000');
 
   useEffect(() => {
     // Generate a random ID (consider security and collision concerns)
@@ -12,10 +14,10 @@ function Tools() {
     setRandomId(newId);
 
     // Redirect to the dynamic route with the generated ID
-    router.push(`/tool/${newId}`);
+    router.push(`/palette/${'fefefe-000000'}`);
   }, []);
 
   return null; // No visible content needed after redirect
 }
 
-export default Tools;
+export default PalettePage;
