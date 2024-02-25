@@ -2,23 +2,21 @@ import { useMyContext } from '@/context/store';
 import React, { useState, useEffect, useRef } from 'react';
 
 function GradientColorPicker({ setSelectedPointIndex,rotation ,gradientType}) {
-    const { colors, setColors } = useMyContext();
-    const [initialStateSet, setInitialStateSet] = useState(false);
+    const { colorsList, setcolorsList } = useMyContext();
 
-    console.log(rotation)
     useEffect(() => {
         const initialPoints = [{ value: 0, color: getRandomColor() }, { value: 100, color: getRandomColor() }];
-        setColors(initialPoints)
+        setcolorsList(initialPoints)
     }, []);
 
     useEffect(() => {
         // Update the gradient when points change
         updateGradient();
-    }, [colors,rotation]);
+    }, [colorsList,rotation]);
 
     const getRandomColor = () => {
         const letters = '0123456789ABCDEF';
-        let color = '#';
+        let color = '#';    
         for (let i = 0; i < 6; i++) {
             color += letters[Math.floor(Math.random() * 16)];
         }
@@ -50,9 +48,9 @@ function GradientColorPicker({ setSelectedPointIndex,rotation ,gradientType}) {
         const mouseMoveListener = (e) => {
             const deltaX = e.clientX - startX;
             const newPosition = Math.round(Math.max(0, Math.min(100, ((initialLeft + deltaX) / e.target.parentElement.offsetWidth) * 100)));
-            const newColors = [...colors];
+            const newColors = [...colorsList];
             newColors[index].value = newPosition;
-            setColors(newColors);
+            setcolorsList(newColors);
             updateGradient();
         };
     
@@ -86,19 +84,19 @@ function GradientColorPicker({ setSelectedPointIndex,rotation ,gradientType}) {
             const percent = (x / e.target.offsetWidth) * 100;
             const newValue = Math.round(percent);
 
-            const existingPointIndex = colors.findIndex((point) => Math.abs(point.value - newValue) < 2);
+            const existingPointIndex = colorsList.findIndex((point) => Math.abs(point.value - newValue) < 2);
 
             if (existingPointIndex === -1) {
                 const newPoint = { value: newValue, color: getRandomColor() };
 
-                setColors([...colors, newPoint]);
-                setSelectedPointIndex(colors.length); // Set selected index to the index of the newly added point
+                setcolorsList([...colorsList, newPoint]);
+                setSelectedPointIndex(colorsList.length); // Set selected index to the index of the newly added point
             }
         }
     };
 
     const updateGradient = () => {
-        const sortedPoints = [...colors].sort((a, b) => a.value - b.value);
+        const sortedPoints = [...colorsList].sort((a, b) => a.value - b.value);
         const gradientColors = sortedPoints.map((point) => `${point.color} ${point.value}%`);
         const gradient = `linear-gradient(to right, ${gradientColors.join(', ')})`;
         let gradientWithRotation
@@ -116,11 +114,11 @@ function GradientColorPicker({ setSelectedPointIndex,rotation ,gradientType}) {
         <div className="flex flex-col w-full items-center justify-center gap-5">
           
             <div
-                className="w-full h-6 cursor-pointer rounded-full relative"
+                className="w-full h-4 cursor-pointer rounded-full relative"
                 style={{ background: 'var(--gradient)' }}
                 onClick={(e) => handleColorPickerClick(e)}
             >
-                {colors.map((point, index) => (
+                {colorsList.map((point, index) => (
                     <div
                         key={index}
                         className="pointer absolute bg-white w-6 h-6 rounded-full cursor-pointer border-4 border-black"

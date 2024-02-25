@@ -5,6 +5,7 @@ import { useMyContext } from '@/context/store';
 import GradientRangeInput from '@/components/gradientRangeComponent';
 import GradientRange from '@/components/gradientRange';
 import MultiRangeSlider from '@/components/gradientRange';
+import Layout from '@/components/layout';
 
 function page() {
 
@@ -59,9 +60,12 @@ function page() {
 
     // console.log(colors, 'colorss')
     return (
-        <div className="w-screen h-screen px-12 py-11 bg-white flex-col justify-start items-center gap-5 inline-flex">
-            <div className="w-3/4 relative rounded-2xl">
-                <div className="w-full h-60 left-[0.50px] rounded-3xl" style={{ background: 'var(--gradientWithRotation)' ? 'var(--gradientWithRotation)' : gradientStyle }} />
+        <Layout>
+
+
+        <div className="w-full h-screen px-12 py-11 bg-white flex-col justify-start items-center gap-5 inline-flex">
+            <div className="w-full relative rounded-2xl">
+                <div className="w-full h-96 left-[0.50px] rounded-3xl" style={{ background: 'var(--gradientWithRotation)' ? 'var(--gradientWithRotation)' : gradientStyle }} />
             </div>
             <div className=" flex-col w-3/4 p-4 justify-center items-center gap-2.5 flex">
               
@@ -107,6 +111,7 @@ function page() {
                 </div>
             </div>
         </div>
+        </Layout>
     )
 }
 

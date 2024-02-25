@@ -23,8 +23,10 @@ function Page() {
 
   const calculateInterpolatedColor = (color1, color2) => {
     // Parse hex values
+    console.log(color1,color2);
     const c1 = parseInt(color1.slice(1), 16);
     const c2 = parseInt(color2.slice(1), 16);
+    console.log(c1,c2);
 
     // Calculate interpolated values
     const r = Math.floor((getChannel(c1, 'r') + getChannel(c2, 'r')) / 2);
